@@ -2,7 +2,7 @@ import serial
 import time
 import sys
 
-arduino = serial.Serial(port='/dev/cu.usbmodem2101', timeout=0)
+arduino = serial.Serial(port='/dev/cu.usbserial-110', timeout=0)
 time.sleep(2)
 
 print("Enter '1' to turn 'on' the LED and '0' to turn LED 'off'")

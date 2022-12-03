@@ -1,32 +1,66 @@
-// RedLed - Digital output pin number
-// Data   - Int that stores serial data
-int RedLed = 2;
-int data;
+#include <FastLED.h>
+
+#define numLEDS 25
+#define LED_Pin 2
+
+int dispMode    = 3;
+int numOfCOLS   = 5;
+int numOfROWS   = 5;
+int row         = 0;
+int col         = 0;
+int delta       = 1;
+int brightness  = 25;
+int serialData;
+
+float freq = 0.5;
+float pi = 3.14;
+
+CRGB leds[numLEDS];
+
+uint8_t hue;
 
 void setup() {
   
   Serial.begin(9600);
-  pinMode(RedLed, OUTPUT);
-  digitalWrite(RedLed, LOW);
+
+  FastLED.addLeds<WS2812B, LED_Pin, GRB>(leds,numLEDS);
+  FastLED.setBrightness(25);
+
+  hue = 0;
+
+  pinMode(LED_BUILTIN, OUTPUT);
 }
 
 // the loop function runs over and over again forever
 void loop() {
   while (Serial.available())
   {
-    data = Serial.read();
+    serialData = Serial.read();
   }
 
-  if (data == '1')
+  if (serialData == '1')
   {
-    digitalWrite(RedLed, HIGH);
-    Serial.println("LED turned on!");
+    for(int i = 0; i < numLEDS; i++)
+    {
+      leds[i] = CHSV(hue, 255, 255);
+    }
+    hue++;
+
+    digitalWrite(LED_BUILTIN, HIGH);
+
+    Serial.println("Matrix Online!");
   }
 
-  else if (data == '0')
+  else if (serialData == '0')
   {
-    digitalWrite(RedLed, LOW);
-    Serial.println("LED turned off!");
+    for(int i = 0; i < numLEDS; i++)
+    {
+      leds[i] = CHSV(0, 255, 0);
+    }
+
+    digitalWrite(LED_BUILTIN, LOW);
+
+    Serial.println("Matrix Offline!");
   }
 
 }
