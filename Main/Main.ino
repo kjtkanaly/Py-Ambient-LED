@@ -26,41 +26,50 @@ void setup() {
   hue = 0;
 
   pinMode(LED_BUILTIN, OUTPUT);
+
+  for(int i = 0; i < numLEDS; i++)
+  {
+    leds[i] = CHSV(0, 0, 0);
+  }
+
+  FastLED.show();
 }
 
 // the loop function runs over and over again forever
 void loop() {
-
+  
   while (Serial.available())
   {
     serialData = Serial.read();
-  }
 
-  if (serialData == '1')
-  {
-    for(int i = 0; i < numLEDS; i++)
+    if (serialData == '1')
     {
-      leds[i] = CHSV(127, 255, 255);
+      for(int i = 0; i < numLEDS; i++)
+      {
+        leds[i] = CHSV(127, 255, 255);
+      }
+
+      digitalWrite(LED_BUILTIN, HIGH);
+
+      Serial.print("Matrix Online!");
+      Serial.print("\n");
     }
 
-    digitalWrite(LED_BUILTIN, HIGH);
-
-    Serial.println("Matrix Online!");
-  }
-
-  else if (serialData == '0')
-  {
-    for(int i = 0; i < numLEDS; i++)
+    else if (serialData == '0')
     {
-      leds[i] = CHSV(0, 0, 0);
+      for(int i = 0; i < numLEDS; i++)
+      {
+        leds[i] = CHSV(0, 0, 0);
+      }
+
+      digitalWrite(LED_BUILTIN, LOW);
+
+      Serial.print("Matrix Offline!");
+      Serial.print("\n");
     }
 
-    digitalWrite(LED_BUILTIN, LOW);
-
-    Serial.println("Matrix Offline!");
+    FastLED.show();
   }
-
-  FastLED.show();
 }
 
 /*Test*/
