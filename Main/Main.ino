@@ -1,11 +1,8 @@
 #include <FastLED.h>
 
-#define numLEDS 25
-#define LED_Pin 2
+# define numLEDS 25
+# define LED_Pin 2
 
-int dispMode    = 3;
-int numOfCOLS   = 5;
-int numOfROWS   = 5;
 int row         = 0;
 int col         = 0;
 int delta       = 1;
@@ -33,6 +30,7 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
+
   while (Serial.available())
   {
     serialData = Serial.read();
@@ -42,9 +40,8 @@ void loop() {
   {
     for(int i = 0; i < numLEDS; i++)
     {
-      leds[i] = CHSV(hue, 255, 255);
+      leds[i] = CHSV(127, 255, 255);
     }
-    hue++;
 
     digitalWrite(LED_BUILTIN, HIGH);
 
@@ -55,7 +52,7 @@ void loop() {
   {
     for(int i = 0; i < numLEDS; i++)
     {
-      leds[i] = CHSV(0, 255, 0);
+      leds[i] = CHSV(0, 0, 0);
     }
 
     digitalWrite(LED_BUILTIN, LOW);
@@ -63,6 +60,7 @@ void loop() {
     Serial.println("Matrix Offline!");
   }
 
+  FastLED.show();
 }
 
 /*Test*/

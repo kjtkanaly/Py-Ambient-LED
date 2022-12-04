@@ -14,12 +14,18 @@ while True:
 
     if (var == '1'):
         arduino.write(str.encode('1'))
-        print("Turned LED on!")
+        code = arduino.read(15)
+
+        print(code)
+
         time.sleep(1)
 
     elif (var == '0'):
         arduino.write(str.encode('0'))
-        print("Turned LED off...")
+        code = arduino.read(15)
+
+        print(code)
+
         time.sleep(1)
 
     elif (var == 'end'):
