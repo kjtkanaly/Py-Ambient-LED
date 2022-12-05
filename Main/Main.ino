@@ -3,39 +3,40 @@
 # define numLEDS 25
 # define LED_Pin 2
 
-int row         = 0;
-int col         = 0;
-int delta       = 1;
-int brightness  = 25;
+int row           = 0;
+int col           = 0;
+int delta         = 1;
+int brightness    = 25;
+int hueLedPin     = 4;
+int satLedPin     = 5;
+int valLedPin     = 6;
 int serialData;
 
-float freq = 0.5;
-float pi = 3.14;
-
 String serialOutput = "";
-String HSV_Code = "";
 
 CRGB leds[numLEDS];
 
-uint8_t hue;
-
 void setup() {
   
+  // Begin the serial comms
   Serial.begin(9600);
 
+  // Initialize the LED matrix
   FastLED.addLeds<WS2812B, LED_Pin, GRB>(leds,numLEDS);
-  FastLED.setBrightness(25);
+  FastLED.setBrightness(brightness);
 
-  hue = 0;
-
-  pinMode(LED_BUILTIN, OUTPUT);
-
+  // Turn the LEDs off
   for(int i = 0; i < numLEDS; i++)
   {
     leds[i] = CHSV(0, 0, 0);
   }
-
   FastLED.show();
+
+  // Initialize my logic check LEDs
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(hueLedPin, OUTPUT);
+  pinMode(satLedPin, OUTPUT);
+  pinMode(valLedPin, OUTPUT);
 }
 
 void UpdateLEDs(String HSV_Code)
