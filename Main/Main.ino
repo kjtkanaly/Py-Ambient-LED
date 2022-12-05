@@ -33,37 +33,31 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
 }
 
+String ParseString(String Input, char delim)
+{
+  String Output = "";
+
+  for (int i = 0; i < Input.length; i++)
+  {
+    if (Input[i] == delim)
+    {
+      break;
+    }
+
+    Output += Input[i];
+  }
+
+  return Output;
+}
+
 void UpdateLEDs(String HSV_Code)
 {
-  // Example Code - H125S250V200
+  // Example Code - c125,250,200
 
-  String HueCode = "";
-  String SatCode = "";
-  String ValCode = "";
-
-  int index = 1;
-  while (HSV_Code.substring(index, index+1) != 'S')
-  { 
-    HueCode += HSV_Code.substring(index, index+1);
-    index++;
-  }
-
-  index++;
-
-  while (HSV_Code.substring(index, index+1) != 'V')
-  {
-    SatCode += HSV_Code.substring(index, index+1);
-    index++;
-  }
-
-  index++;
-
-  while (index < HSV_Code.length())
-  {
-    ValCode += HSV_Code.substring(index, index+1);
-    index++;
-  }
-
+  String HueCode = ParseString(HSV_Code.substring(1), ',');
+  String SatCode = ParseString(HSV_Code.substring(5), ',');
+  String ValCode = ParseString(HSV_Code.substring(9), ',');
+  
   // Debug: Send back the HSV code
   Serial.println(HueCode + ", " + SatCode + ", " + ValCode);
 
