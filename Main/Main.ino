@@ -86,7 +86,12 @@ void loop() {
     else
     {
       Serial.println(serialOutput);
-      UpdateLEDs(serialOutput);
+
+      if (serialOutput[0] == 'c')
+      {
+        UpdateLEDs(serialOutput);
+      }
+      
       serialOutput = "";
     }
   }
