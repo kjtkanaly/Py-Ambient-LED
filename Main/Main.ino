@@ -64,7 +64,7 @@ void UpdateLEDs(String HSV_Code)
   String ValCode = ParseString(HSV_Code.substring(satIndex+1, valIndex), ',');
   
   // Debug: Send back the HSV code
-  Serial.println(HueCode + ", " + SatCode + ", " + ValCode);
+  //Serial.println(HueCode + ", " + SatCode + ", " + ValCode);
 
   // Update the LEDs with the HSV code
   for(int i = 0; i < numLEDS; i++)
@@ -90,7 +90,7 @@ void loop() {
 
     else
     {
-      Serial.println(serialOutput);
+      //Serial.println(serialOutput);
 
       if (serialOutput[0] == 'c')
       {
