@@ -3,10 +3,12 @@
 # define numLEDS 25
 # define LED_Pin 2
 
-int row           = 0;
-int col           = 0;
-int delta         = 1;
-int brightness    = 25;
+bool debug = false;
+
+int row = 0;
+int col = 0;
+int delta = 1;
+int brightness = 25;
 int serialData;
 
 String serialOutput = "";
@@ -62,9 +64,10 @@ void UpdateLEDs(String HSV_Code)
   String HueCode = ParseString(HSV_Code.substring(1,hueIndex), ',');
   String SatCode = ParseString(HSV_Code.substring(hueIndex+1, satIndex), ',');
   String ValCode = ParseString(HSV_Code.substring(satIndex+1, valIndex), ',');
-  
-  // Debug: Send back the HSV code
-  //Serial.println(HueCode + ", " + SatCode + ", " + ValCode);
+
+  if (debug == true) {
+    Serial.println(HueCode + ", " + SatCode + ", " + ValCode);
+  }
 
   // Update the LEDs with the HSV code
   for(int i = 0; i < numLEDS; i++)
@@ -90,13 +93,16 @@ void loop() {
 
     else
     {
-      //Serial.println(serialOutput);
+      if (debug == true)
+      {
+        Serial.println(serialOutput);
+      }
 
       if (serialOutput[0] == 'c')
       {
         UpdateLEDs(serialOutput);
       }
-      
+
       serialOutput = "";
     }
   }
