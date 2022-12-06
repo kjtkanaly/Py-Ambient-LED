@@ -19,24 +19,44 @@ def getAverageColorOnScreenHSV():
     # Convert the RGB to HSV
     hsv = colorsys.rgb_to_hsv(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255)
 
+    return hsv
+
+def setMatrixColorToScreenAverage(arduino):
+
+    while True:
+
+        hsv = getAverageColorOnScreenHSV()
+
+        msg = str("c" + str(round(hsv[0] * 255)) + "," + str(round(hsv[1] * 255)) + "," + str((hsv[2] * 255)) + "\n")
+        print(msg)
+
+        # Send the new HSV values to the arduino
+        arduino.write(str.encode(msg))
+        time.sleep(2)
+
+def setMatrixColorToHueRainbow(arduino):
+    sat = 250
+    val = 180
+
+    hue = np.zeros((1,255))
+
+    while True:
+        for i in range(1, hue.size + 1):
+            msg = str("c" + str(i) + "," + str(sat) + "," + str(val) + "\n")
+            print(msg)
+
+            # Send the new HSV values to the arduino
+            arduino.write(str.encode(msg))
+            time.sleep(0.1)
+
 
 def main():
     # Establish the serial connection
     arduino = serial.Serial(port='/dev/cu.usbserial-110', timeout=0)
     time.sleep(1)
 
-    sat = 250
-    val = 180
-
-    hue = np.zeros((1,255))
-
-    for i in range(1, hue.size):
-        msg = str("c" + str(i) + "," + str(sat) + "," + str(val) + "\n")
-        print(msg)
-
-        # Send the new HSV values to the arduino
-        arduino.write(str.encode(msg))
-        time.sleep(0.1)
+    #setMatrixColorToHueRainbow(arduino)
+    setMatrixColorToScreenAverage(arduino)
 
 
 if __name__ == "__main__":
