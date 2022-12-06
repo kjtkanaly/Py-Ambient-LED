@@ -37,7 +37,7 @@ String ParseString(String Input, char delim)
 {
   String Output = "";
 
-  for (int i = 0; i < Input.length; i++)
+  for (int i = 0; i < Input.length(); i++)
   {
     if (Input[i] == delim)
     {
@@ -52,23 +52,28 @@ String ParseString(String Input, char delim)
 
 void UpdateLEDs(String HSV_Code)
 {
-  // Example Code - c125,250,200
+  // Example Codes - c125,250,200
 
-  String HueCode = ParseString(HSV_Code.substring(1), ',');
-  String SatCode = ParseString(HSV_Code.substring(5), ',');
-  String ValCode = ParseString(HSV_Code.substring(9), ',');
+  // Finding the starting index of Hue,Sat,Val
+  int hueIndex = HSV_Code.indexOf(',');
+  int satIndex = HSV_Code.indexOf(',', hueIndex + 1);
+  int valIndex = HSV_Code.indexOf(',', satIndex + 1);
+
+  String HueCode = ParseString(HSV_Code.substring(1,hueIndex), ',');
+  String SatCode = ParseString(HSV_Code.substring(hueIndex+1, satIndex), ',');
+  String ValCode = ParseString(HSV_Code.substring(satIndex+1, valIndex), ',');
   
   // Debug: Send back the HSV code
   Serial.println(HueCode + ", " + SatCode + ", " + ValCode);
 
-  /* // Update the LEDs with the HSV code
+  // Update the LEDs with the HSV code
   for(int i = 0; i < numLEDS; i++)
   {
     leds[i] = CHSV(HueCode.toInt(), SatCode.toInt(), ValCode.toInt());
   }
 
   // Push the LED values to the matrix
-  FastLED.show(); */
+  FastLED.show(); 
 }
 
 // the loop function runs over and over again forever
