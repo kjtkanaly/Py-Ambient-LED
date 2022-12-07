@@ -70,10 +70,8 @@ void UpdateLEDs(String HSV_Code)
   }
 
   // Update the LEDs with the HSV code
-  for(int i = 0; i < numLEDS; i++)
-  {
-    leds[i] = CHSV(HueCode.toInt(), SatCode.toInt(), ValCode.toInt());
-  }
+  fill_solid(leds, numLEDS, CRGB(HueCode.toInt(), SatCode.toInt(), ValCode.toInt()));
+  // fill_solid(leds, numLEDS, CHSV(HueCode.toInt(), SatCode.toInt(), ValCode.toInt()));
 
   // Push the LED values to the matrix
   FastLED.show(); 

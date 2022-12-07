@@ -41,22 +41,57 @@ def setMatrixColorToScreenAverage(arduino):
 
 
 def setMatrixColorToHueRainbow(arduino):
-    sat = 250
-    val = 180
-    hue = np.zeros((1,255))
+    sat = 255
+    val = 255
+    stepSize = 5
+    serialDelay = 0.1
 
+    hue = np.linspace(start=1,stop=360,num=360)
+
+    # Set the initial color
+    currentColorHSV = (0 / 360,
+                       sat / 255,
+                       val / 255)
+    currentColorRGB = colorsys.hsv_to_rgb(currentColorHSV[0],
+                                          currentColorHSV[1],
+                                          currentColorHSV[2])
+
+    msg = str("c" + str(currentColorRGB[0] * 255) + 
+              "," + str(currentColorRGB[1] * 255) + 
+              "," + str(currentColorRGB[2] * 255) + "\n")
+    print(msg)
+
+    arduino.write(str.encode(msg))
+    time.sleep(serialDelay)
+
+    # Cycle through the rainbow
     while True:
-        for i in range(1, hue.size + 1):
-            msg = str("c" + str(i) + 
-                      "," + str(sat) + 
-                      "," + str(val) + "\n")
-            print(msg)
+        for i in hue:
+            newColorHSV = (i / 360,
+                           sat / 255,
+                           val / 255)
+            newColorRGB = colorsys.hsv_to_rgb(newColorHSV[0], 
+                                              newColorHSV[1],
+                                              newColorHSV[2])
 
-            # Tx the new HSV values to the arduino
-            arduino.write(str.encode(msg))
+            colorSteps = np.linspace(start=currentColorRGB, stop=newColorRGB, num=stepSize)
 
-            # Wait for 100 milliseconds
-            time.sleep(0.1)
+            for colorStep in colorSteps:
+                
+                colorStep = round(colorStep)
+
+                msg = str("c" + str(colorStep[0] * 255) + 
+                          "," + str(colorStep[1] * 255) + 
+                          "," + str(colorStep[2] * 255) + "\n")
+                print(msg)
+
+                # Tx the new HSV values to the arduino
+                arduino.write(str.encode(msg))
+
+                # Wait for 100 milliseconds
+                time.sleep(serialDelay)
+
+            currentColorRGB = newColorRGB
 
 
 def main():
@@ -64,8 +99,8 @@ def main():
     arduino = serial.Serial(port="/dev/cu.usbserial-110", timeout=0)
     time.sleep(1)
 
-    #setMatrixColorToHueRainbow(arduino)
-    setMatrixColorToScreenAverage(arduino)
+    setMatrixColorToHueRainbow(arduino)
+    # setMatrixColorToScreenAverage(arduino)
 
 
 if __name__ == "__main__":
