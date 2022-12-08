@@ -42,24 +42,26 @@ def setMatrixColorToScreenAverage(arduino):
 
 
 def setMatrixColorToHueRainbow(arduino):
-    sat = 255
-    val = 255
+    sat = 1
+    val = 1
     stepSize = 5
-    serialDelay = 0.1
+    serialDelay = 0.01
 
     hue = np.linspace(start=1,stop=360,num=360)
 
     # Set the initial color
-    currentColorHSV = (0 / 360,
-                       sat / 255,
-                       val / 255)
+    currentColorHSV = (0,
+                       sat,
+                       val)
     currentColorRGB = colorsys.hsv_to_rgb(currentColorHSV[0],
                                           currentColorHSV[1],
                                           currentColorHSV[2])
 
-    msg = str("c" + str(currentColorRGB[0] * 255) + 
-              "," + str(currentColorRGB[1] * 255) + 
-              "," + str(currentColorRGB[2] * 255) + "\n")
+    currentColorRGB = tuple([255 * x for x in currentColorRGB])
+
+    msg = str("c" + str(currentColorRGB[0]) + 
+              "," + str(currentColorRGB[1]) + 
+              "," + str(currentColorRGB[2]) + "\n")
     print(msg)
 
     arduino.write(str.encode(msg))
@@ -69,23 +71,21 @@ def setMatrixColorToHueRainbow(arduino):
     while True:
         for i in hue:
             newColorHSV = (i / 360,
-                           sat / 255,
-                           val / 255)
+                           sat,
+                           val)
             newColorRGB = colorsys.hsv_to_rgb(newColorHSV[0], 
-                                              newColorHSV[1],
-                                              newColorHSV[2])
+                                          newColorHSV[1],
+                                          newColorHSV[2])
+            newColorRGB = tuple([math.floor(255 * x) for x in newColorRGB])
 
-            print(newColorRGB)
+            steps = np.linspace(currentColorRGB, newColorRGB, 5)
 
-            colorSteps = np.linspace(start=currentColorRGB, stop=newColorRGB, num=stepSize)
+            for step in steps:
+                ColorStep = tuple([math.floor(x) for x in step])
 
-            for colorStep in colorSteps:
-                
-                colorStep = round(colorStep)
-
-                msg = str("c" + str(colorStep[0] * 255) + 
-                          "," + str(colorStep[1] * 255) + 
-                          "," + str(colorStep[2] * 255) + "\n")
+                msg = str("c" + str(ColorStep[0]) + 
+                          "," + str(ColorStep[1]) + 
+                          "," + str(ColorStep[2]) + "\n")
                 print(msg)
 
                 # Tx the new HSV values to the arduino
@@ -134,11 +134,11 @@ def LerpBetweenColors():
 
 def main():
     # Establish the serial connection
-    #arduino = serial.Serial(port="/dev/cu.usbserial-110", timeout=0)
-    # time.sleep(1)
+    arduino = serial.Serial(port="/dev/cu.usbserial-110", timeout=0)
+    time.sleep(1)
 
-    LerpBetweenColors()
-    # setMatrixColorToHueRainbow(arduino)
+    # LerpBetweenColors()
+    setMatrixColorToHueRainbow(arduino)
     # setMatrixColorToScreenAverage(arduino)
 
 
