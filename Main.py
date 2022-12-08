@@ -2,6 +2,7 @@ import numpy as np
 import pyautogui
 import colorsys
 import serial
+import math
 import time
 import sys
 
@@ -74,6 +75,8 @@ def setMatrixColorToHueRainbow(arduino):
                                               newColorHSV[1],
                                               newColorHSV[2])
 
+            print(newColorRGB)
+
             colorSteps = np.linspace(start=currentColorRGB, stop=newColorRGB, num=stepSize)
 
             for colorStep in colorSteps:
@@ -93,13 +96,49 @@ def setMatrixColorToHueRainbow(arduino):
 
             currentColorRGB = newColorRGB
 
+def LerpBetweenColors():
+    sat = 1
+    val = 1
+    stepSize = 5
+    serialDelay = 0.1
+
+    hue = np.linspace(start=1,stop=360,num=360)
+
+    # Set the initial color
+    currentColorHSV = (0,
+                       sat,
+                       val)
+    currentColorRGB = colorsys.hsv_to_rgb(currentColorHSV[0],
+                                          currentColorHSV[1],
+                                          currentColorHSV[2])
+
+    currentColorRGB = tuple([255*x for x in currentColorRGB])
+
+    # Cycle through the rainbow
+    for i in hue:
+    # for i in range(1,2):
+        newColorHSV = (i / 360,
+                        sat,
+                        val)
+        newColorRGB = colorsys.hsv_to_rgb(newColorHSV[0], 
+                                          newColorHSV[1],
+                                          newColorHSV[2])
+        newColorRGB = tuple([math.floor(255*x) for x in newColorRGB])
+
+        steps = np.linspace(currentColorRGB, newColorRGB, 5)
+        for step in steps:
+            ColorStep = tuple([math.floor(x) for x in step])
+            print(ColorStep)
+
+        currentColorRGB = newColorRGB
 
 def main():
     # Establish the serial connection
-    arduino = serial.Serial(port="/dev/cu.usbserial-110", timeout=0)
-    time.sleep(1)
+    #arduino = serial.Serial(port="/dev/cu.usbserial-110", timeout=0)
+    # time.sleep(1)
 
-    setMatrixColorToHueRainbow(arduino)
+    LerpBetweenColors()
+    # setMatrixColorToHueRainbow(arduino)
     # setMatrixColorToScreenAverage(arduino)
 
 
