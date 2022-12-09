@@ -3,12 +3,18 @@
 # define numLEDS 25
 # define LED_Pin 2
 
-bool debug = false;
+bool debugSerialIn = false;
 
 int row = 0;
 int col = 0;
 int delta = 1;
 int brightness = 25;
+int saturation = 255;
+int value = 255;
+int previousHue = 0;
+int goalHue = 0;
+int hueStepSize = 1;
+int updateHue;
 int serialData;
 
 String serialOutput = "";
@@ -35,47 +41,6 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
 }
 
-String ParseString(String Input, char delim)
-{
-  String Output = "";
-
-  for (int i = 0; i < Input.length(); i++)
-  {
-    if (Input[i] == delim)
-    {
-      break;
-    }
-
-    Output += Input[i];
-  }
-
-  return Output;
-}
-
-void UpdateLEDs(String HSV_Code)
-{
-  // Example Codes - c125,250,200
-
-  // Finding the starting index of Hue,Sat,Val
-  int hueIndex = HSV_Code.indexOf(',');
-  int satIndex = HSV_Code.indexOf(',', hueIndex + 1);
-  int valIndex = HSV_Code.indexOf(',', satIndex + 1);
-
-  String HueCode = ParseString(HSV_Code.substring(1,hueIndex), ',');
-  String SatCode = ParseString(HSV_Code.substring(hueIndex+1, satIndex), ',');
-  String ValCode = ParseString(HSV_Code.substring(satIndex+1, valIndex), ',');
-
-  if (debug == true) {
-    Serial.println(HueCode + ", " + SatCode + ", " + ValCode);
-  }
-
-  // Update the LEDs with the HSV code
-  fill_solid(leds, numLEDS, CRGB(HueCode.toInt(), SatCode.toInt(), ValCode.toInt()));
-  // fill_solid(leds, numLEDS, CHSV(HueCode.toInt(), SatCode.toInt(), ValCode.toInt()));
-
-  // Push the LED values to the matrix
-  FastLED.show(); 
-}
 
 // the loop function runs over and over again forever
 void loop() {
@@ -91,20 +56,64 @@ void loop() {
 
     else
     {
-      if (debug == true)
+      if (debugSerialIn == true)
       {
         Serial.println(serialOutput);
       }
 
-      if (serialOutput[0] == 'c')
+      if (serialOutput[0] == 'h')
       {
-        UpdateLEDs(serialOutput);
+        goalHue = UpdateGoalHueValue(serialOutput);
       }
 
       serialOutput = "";
     }
   }
+
+  // Step the current hue value towards the goal
+  if (previousHue != goalHue)
+  {
+    if (previousHue < goalHue)
+    {
+      if (previousHue < goalHue - hueStepSize)
+      {
+        updateHue = previousHue + hueStepSize;
+      }
+      else
+      {
+        updateHue = goalHue;
+      }
+    }
+    else
+    {
+      if (previousHue > goalHue + hueStepSize)
+      {
+        updateHue = previousHue - hueStepSize;
+      }
+      else
+      {
+        updateHue = goalHue;
+      }
+    }
+
+    // Update the LEDs
+    fill_solid(leds, numLEDS, CHSV(updateHue, saturation, value));
+    FastLED.show();
+
+    previousHue = updateHue;
+  }
   
 }
 
-/*Test*/
+
+// Example Hue Value - h125
+int UpdateGoalHueValue(String hueCode, bool debug=true)
+{
+  hueCode = hueCode.substring(1);
+
+  if (debug == true) {
+    Serial.println(hueCode + ", " + saturation + ", " + value);
+  }
+
+  return (hueCode.toInt());
+}
