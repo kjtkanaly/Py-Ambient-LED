@@ -11,11 +11,12 @@ int delta = 1;
 int brightness = 25;
 int saturation = 255;
 int value = 255;
-int previousHue = 0;
-int goalHue = 0;
-int hueStepSize = 1;
-int updateHue;
 int serialData;
+
+float previousHue = 0;
+float goalHue = 0;
+float hueStepSize = 0.1;
+float updateHue;
 
 String serialOutput = "";
 
@@ -42,6 +43,19 @@ void setup() {
 }
 
 
+// Example Hue Value - h125
+int UpdateGoalHueValue(String hueCode, bool debug=true)
+{
+  hueCode = hueCode.substring(1);
+
+  if (debug == true) {
+    Serial.println(hueCode + ", " + saturation + ", " + value);
+  }
+
+  return (hueCode.toInt());
+}
+
+
 // the loop function runs over and over again forever
 void loop() {
 
@@ -63,7 +77,7 @@ void loop() {
 
       if (serialOutput[0] == 'h')
       {
-        goalHue = UpdateGoalHueValue(serialOutput);
+        goalHue = float(UpdateGoalHueValue(serialOutput));
       }
 
       serialOutput = "";
@@ -103,17 +117,4 @@ void loop() {
     previousHue = updateHue;
   }
   
-}
-
-
-// Example Hue Value - h125
-int UpdateGoalHueValue(String hueCode, bool debug=true)
-{
-  hueCode = hueCode.substring(1);
-
-  if (debug == true) {
-    Serial.println(hueCode + ", " + saturation + ", " + value);
-  }
-
-  return (hueCode.toInt());
 }
